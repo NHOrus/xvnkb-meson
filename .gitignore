@@ -1,0 +1,10 @@
+*.o
+*.so.*
+Makefile.dep
+Makefile.cfg
+configure
+config.h
+xvnkb_install
+xvnkb_uninstall
+xvnkb_localeconf
+xvnkb

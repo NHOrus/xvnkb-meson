@@ -1,0 +1,185 @@
+0.2.11:
+	* 2012/05/25:
+	- Fixed backspace bug in Firefox
+	- Using static to avoid conflict variables with other apps
+0.2.10:
+	* 2009/06/25:
+	- Replace "usleep" with "select" to prevent laptop battery consumption
+	- Use constants for docking status
+	- Set default input method, charset for the first time
+	- Fixed double free in resource file
+0.2.9:
+	* 2006/12/07:
+	- Use Unicode (UTF-8) as default charset
+	- Set some default info (docking, using method) & save for the first time
+	- Allow input Viet Nam Dong sign (telex: dd_, vni: d9_, viqr: dd_)
+	* 2006/02/26:
+	- Use smaller size for default font
+	- Implement systray size calculation (work around for some systray
+	  non-compliant with freedesktop specs)
+	- Use type-casting to avoid some warning messages when compile
+	- Cleanup & fix bugs
+	* 2005/07/18:
+	- No need to check LOCALE anymore, almost distro are ready for UTF-8 locale
+	* 2005/04/01:
+	- Init default resource
+	* 2004/01/24:
+	- Fix telnet segmentation fault
+	- Remove fast VNI
+0.2.8:
+	* 2004/01/17:
+	- Release
+	- Simplify & fix some bugs in new_install.sh/new_uninstall.sh
+	- Use size hint in docking mode only (fix bug when drawing floating icon)
+	* 2004/01/16:
+	- Add new_install.sh/new_uninstall.sh scripts, new xvnkb.spec
+	- Add old_install & old_uninstall entries: old install/uninstall style
+	* 2004/01/13:
+	- Fix thinko in size calcation of Message box
+	- Display message box instead of exit if error occurs on setting locale
+	* 2004/01/12:
+	- Checking LD_PRELOAD, LANG & locale information when xvnkb (GUI) start
+	- Add message box
+	* 2004/01/11:
+	- Undocking when systray has been removed & redocking when systray reappears
+	* 2004/01/07:
+	- Add dock/undock capabilities
+	- Save docking information to resource file
+	* 2004/01/06:
+	- GUI - dockable to systray
+	- CORE - force setting GTK_IM_MODILE=xim (work around for gtk2/gnome2)
+	* 2003/11/20:
+	- Name correction for Telex method, ABC instead of Vietkey (much better :))
+	  -- Rename telex-vkstyle.h => telex-abcstyle.h
+	  -- Usage: --use-abcstroke as option of configure script to enable
+	- Changed configure script's option names: --use-{ext,pro,abc}stroke
+	- Changed some marcro names: VK_USE_{EXT,PRO,ABC}STROKE
+	- Cleanup some stupid codes
+	- Fixed more bugs/thinko in extended Telex mode
+	  -- Usage: --use-extstroke as option of configure script to enable
+	  -- Rule: ] => u+, [ => o+, } => U+, { => O+
+	           w => u+, W => U+
+	- Add ProTelex mode (Programmer Telex mode - use by myself :))
+	  -- Usage: --use-prostroke as option of configure script to enable
+	  -- Rule: [ => u+, ] => o+, { => U+, } => O+
+	           w => u+, W => U+
+	* 2003/11/18:
+	- Fixed thinko in Shift/Capslock case => Fixed bug in VNI input method
+	- Add more extra keystroke for all input methods
+	* 2003/11/15:
+	- Use different word separators for each input method
+	- Add Makefile.sunos => Makefile.linux (use GNU make syntax temporarily)
+	- Add flags supporting for linking shared library on SunSolaris
+	- Support some extra Telex keystrokes
+	  -- Use --use-xstroke as option of configure script to enable
+	  -- Rule: [ => u+, ] => o+, { => U+, } => O+
+	           w => u+, W => U+ (where 'w' or 'W' is start character of a word)
+	- Use Telex standard key stroke as default - Vietkey style is option
+	  -- Use --use-vkstroke as option of configure script to replace standard
+	* 2003/11/14:
+	- Remove Bash syntax in configure
+	- Add checking for uchar, ushort, uint, ulong
+	* 2003/10/02:
+	- Create softlink to particular Makefile based on Platform info (configure)
+	- Add Makefile for *BSD, separate common code & dependent code
+	- Allow using "Windows" key as hotkey prefix
+	- Cleanup some code in xresource.c
+	* 2003/XX/XX:
+	- Add menu option to disable/enable spellcheck
+	- Fixed compilation on FreeBSD
+	- Fixed configure/Makefile (checking dl, xft libs)
+	- Fixed crashing on KDE 3.x (cvs version)
+	- Fixed error with determination of focus window
+	  -- Very rarely, found in Links2.1pre9 graphics only (at the moment)
+	- Fixed spell checking with "gio<...>"
+	- Fixed compilation bug with Debian gcc 2.95.4
+	- Updated documents
+
+0.2.7:
+	- Fixed Hotkey recording
+	- Fixed configure script for XFT detecting
+	  -- Looking for xft-config script
+	- Enable spell checking as default in configure script
+	  -- Disable with --no-spellcheck option
+	- Display Vietnamese menu w/o using XFT
+	  -- use XmbDrawString
+
+0.2.6:
+	- Use XFT (support Vietnamese interface & antilias)
+	  -- Auto detect, disable with option --no-xft
+	- Remove gtk2 module
+	  -- Move xvnkb_gtk.c to "obsolete" folder.
+	  -- Remove option --with-gtk2 in configure script
+	- Add Event handler for all windows (event.c)
+	- Add "Select hotkey" dialog/add resource entry for hotkey
+	- Change popup menu style (cascade)
+	- Fixed more spell check
+	- Fixed tools/xvnkb_ctrl
+
+	- Update documents for Gtk/Gnome 2.x users.
+	  -- Gtk/Gnome 2.x apps can use X-Input-Method with xvnkb (see README)
+
+0.2.5:
+	- Fix & update documents (locale)
+	- Add more options for shared libs compilation
+	- Add support for gtk2 (xvnkb_gtk.c)
+	  -- Add option --with-gtk2 for configure script
+	  -- Usage: $ ./configure --with-gtk2
+	- Add more functions for installation script
+	  -- Detect and help user create UTF-8 locale
+	- Add more scripts for installation (localesetup.sh, xvnkb.sh)
+	  -- localesetup.sh: help user creating locale
+	  -- xvnkb.sh: a shell script which help user set LD_PRELOAD, LANG automatically
+	- Code cleanup
+
+0.2.4:
+	- Smart Vietnamese input (auto regconize Foreign languages word): spell checking
+	  -- Add option --spell-check for configure script
+	  -- Usage: $ ./configure --spell-check
+	- Rewrite xvnkb_ctrl
+	  -- use xconfig source for load/save configuration
+	  -- add option -t for toggle status
+	- Optimize and cleanup code
+
+	- Add version info used for all scripts (file VERSION)
+	- Add version number to xvnkb.so. In this release it will be xvnkb.so.0.2.4
+	- Safe install/uninstall scripts, add version info to all xvnkb scripts
+	- Update Makefile, fixed tools/Makefile
+	- Update documents
+
+0.2.3:
+	- (*) Support input other charsets (vni, tcvn, viscii, vps,...) when LANG=*UTF-8
+	- (Testing) In XLookupString, returned Keysym always set to 0
+	  -- export CFLAGS=-DVK_USE_KEYSYM before compilling to use old style (0.2.2)
+	- Smarter Vietnamese input
+	  -- auto switch off temporality after reversing mark
+	  -- turn back when:
+		. Delete reversed mark character (using backspace)
+		. Start next word
+	- More cleanup
+
+	- Fixed and update documents
+
+0.2.2:
+	- Fixed XLookupString treating buffer as 2-byte buffer pointer
+	  -- report and fixed by Egor Yu. Shkerin <egor@papillon.ru>
+	- Fixed "DD" bug in telex mode (KDE3) -- forgot to clear shift state
+	- Optimized & cleanup some code
+	- Makefile more robust -- can "make" without run "./configure" (auto)
+
+0.2.1:
+	- Add "mark deletting" feature
+		Telex: 'z'/'Z'
+		Vni: '0'
+		Viqr: '='
+	- Add configure script to detect X lib & dynamic link loader lib
+	- Add tools/xvnkb_ctrl - console utility
+	- (Testing) In UTF-8 mode, always return XK_a keysym to avoid KDE hotkey lookup
+
+0.2.0:
+	- GUI (xvnkb)
+	- Install scripts
+	- DOCS
+
+0.1.99:
+	- CORE (xvnkb.so) - support UTF-8 input

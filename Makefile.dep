@@ -1,0 +1,29 @@
+button.o: button.c data.h debug.h typedefs.h config.h mode.h button.h \
+  event.h
+data.o: data.c data.h debug.h typedefs.h config.h mode.h
+event.o: event.c event.h data.h debug.h typedefs.h config.h mode.h
+flash.o: flash.c flash.h data.h debug.h typedefs.h config.h mode.h \
+  event.h
+font.o: font.c data.h debug.h typedefs.h config.h mode.h property.h \
+  event.h font.h vkeydefs.h label.h button.h
+hotkey.o: hotkey.c data.h debug.h typedefs.h config.h mode.h property.h \
+  event.h hotkey.h vkeydefs.h button.h label.h
+label.o: label.c data.h debug.h typedefs.h config.h mode.h label.h
+main.o: main.c data.h debug.h typedefs.h config.h mode.h xconfig.h \
+  xresource.h flash.h session.h mainwin.h menu.h hotkey.h vkeydefs.h \
+  property.h event.h
+mainwin.o: mainwin.c data.h debug.h typedefs.h config.h mode.h menu.h \
+  event.h systray.h
+menu.o: menu.c data.h debug.h typedefs.h config.h mode.h flash.h event.h
+mode.o: mode.c data.h debug.h typedefs.h config.h mode.h property.h
+property.o: property.c debug.h typedefs.h config.h property.h
+session.o: session.c session.h data.h debug.h typedefs.h config.h mode.h \
+  property.h hotkey.h vkeydefs.h
+systray.o: systray.c data.h debug.h typedefs.h config.h mode.h
+visckey.o: visckey.c debug.h visckey.h typedefs.h config.h utf.h \
+  telex-standard.h viqr.h tcvn.h vni.h viscii.h vps.h utf8.h
+xconfig.o: xconfig.c xconfig.h data.h debug.h typedefs.h config.h mode.h \
+  property.h
+xresource.o: xresource.c data.h debug.h typedefs.h config.h mode.h
+xvnkb.o: xvnkb.c debug.h typedefs.h config.h visckey.h property.h \
+  xvnkb_dll.h vkeydefs.h

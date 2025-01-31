@@ -1,0 +1,261 @@
+#!/bin/sh
+#----------------------------------------------------------------------------#
+#  configuration script for xvnkb                                            #
+#----------------------------------------------------------------------------#
+#  copyright         : (C) 2002 by Dao Hai Lam                               #
+#                      VISC Software & Security Consultant Company           #
+#                      Hall 3, Quang Trung Software City                     #
+#                      Tan Chanh Hiep Ward, District 12,                     #
+#                      Ho Chi Minh city, VIETNAM                             #
+#  website           : http://www.visc-network.com                           #
+#  email             : lam@visc-network.com                                  #
+#  last modify       : Sun,  4 Aug 2002 23:29:07 +0700                       #
+#----------------------------------------------------------------------------#
+#                                                                            #
+#   This program is free software; you can redistribute it and/or modify     #
+#   it under the terms of the GNU General Public License as published by     #
+#   the Free Software Foundation; either version 2 of the License, or        #
+#   (at your option) any later version.                                      #
+#                                                                            #
+#----------------------------------------------------------------------------#
+
+show_status() {
+	if [ "$1" = "1" ]; then
+		echo yes
+	else
+		echo no
+	fi
+}
+
+xcc=$CC
+#prefix=/usr/local
+x_dirs="/usr/X11R6 /usr/X11 /usr/include \
+		/usr/local/X11R6 /usr/local/X11 /usr/local/include \
+		/opt/X11R6 /opt/X11 /opt/include"
+
+if [ ! -f VERSION ]; then
+	echo
+	echo "Version info is missing. Try:"
+	echo
+	echo "$ echo version.number > VERSION"
+	echo
+	echo "then run ./configure again"
+	echo
+	exit
+else
+	version=`cat VERSION`
+fi
+
+echo
+echo "Configuration for xvnkb $version on `uname`"
+echo
+echo "  Type \"$0 --help\" for more information"
+echo
+
+if [ "$xcc" = "" ]; then
+	xcc=gcc
+fi
+
+vk_opt=
+xlib_dir=
+use_xft=1
+use_abcstroke=0
+use_extstroke=0
+use_prostroke=0
+use_spellcheck=1
+for a in $*; do
+	case "$a" in
+#		--prefix=*)
+#			v=`echo $1|cut -f2 -d=`;
+#			if [ -d "$v" ]; then
+#				prefix=$v
+#			fi
+#			;;
+
+		--x-dir=*)
+			v=`echo $1|cut -f2 -d=`;
+			if [ -d "$v" ]; then
+				xlib_dir=$v
+			fi
+			;;
+
+		--use-abcstroke)
+			use_abcstroke=1
+			;;
+
+		--use-extstroke)
+			use_extstroke=1
+			;;
+
+		--use-prostroke)
+			use_prostroke=1
+			;;
+
+		--no-spellcheck)
+			use_spellcheck=0
+			;;
+
+		--no-xft)
+			use_xft=0
+			;;
+
+		--enable-debug)
+			vk_opt="-DDEBUG $vk_opt"
+			;;
+
+		--help)
+			echo "Usage: ./configure [OPTION]... [VAR=VALUE]..."
+			echo ""
+			echo "Options:"
+			echo "--help             Display help and exit"
+			echo "--x-dir=DIR        Xlib path"
+			echo "--use-extstroke    Enable extended keystroke"
+			echo "--use-prostroke    Enable programmer keystroke"
+			echo "--use-abcstroke    Enable ABC liked Telex keystroke"
+			echo "--no-spellcheck    Spelling check"
+			echo "--no-xft           X freetype"
+			echo
+			exit
+			;;
+	esac
+done
+
+rm -f Makefile.cfg
+
+if [ "$XLIB_DIR" != "" ]; then
+	x_dirs="$XLIB_DIR $x_dirs"
+fi
+
+# Create config.h
+echo -e "#ifndef __VK_CONFIG_H\n#define __VK_CONFIG_H" > config.h
+
+if [ "$use_spellcheck" = "1" ]; then
+	echo "#define VK_CHECK_SPELLING" >> config.h
+fi
+
+if [ "$use_abcstroke" = "1" ]; then
+	echo "#define VK_USE_ABCSTROKE" >> config.h
+fi
+
+if [ "$use_prostroke" = "1" ]; then
+	echo "#define VK_USE_PROSTROKE" >> config.h
+	use_extstroke=1
+fi
+
+if [ "$use_extstroke" = "1" ]; then
+	echo "#define VK_USE_EXTSTROKE" >> config.h
+fi
+
+for dtype in VK_NEED_UCHAR VK_NEED_USHORT VK_NEED_UINT VK_NEED_ULONG; do
+	ctype=`echo $dtype | cut -f3 -d_ | tr [A-Z] [a-z]`
+	echo -n "Checking $ctype... "
+	$xcc -D$dtype config/ctype.c >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo yes
+		rm -f a.out
+	else
+		echo no
+		echo "#define $dtype" >> config.h
+	fi
+done
+
+echo "#endif" >> config.h
+
+echo -n "Checking dynamic linking loader... "
+$xcc config/dl.c >/dev/null 2>&1
+if [ $? != 0 ]; then
+	$xcc config/dl.c -ldl >/dev/null 2>&1
+	if [ $? != 0 ]; then
+		rm -f a.out
+		echo no
+		exit
+	fi
+	lib_dl=-ldl
+else
+	lib_dl=
+fi
+rm -f a.out
+echo yes
+
+echo -n "Checking X11 lib... "
+xlib_dir=
+for x in $x_dirs; do
+	$xcc -I$x/include config/x.c -L$x/lib -lX11 >/dev/null 2>&1
+	if [ $? = 0 ]; then
+		rm -f a.out
+		xlib_dir=$x
+		echo $x
+		break
+	fi
+done
+
+if [ "$xlib_dir" = "" ]; then
+	echo no
+	exit
+fi
+
+if [ "$use_xft" = "1" ]; then
+	echo -n "Checking pkg-config... "
+	xft_incs=`pkg-config --cflags xft 2>/dev/null`
+	xft_libs=`pkg-config --libs xft 2>/dev/null`
+	if [ $? != 0 ]; then
+		echo no
+		echo -n "Checking xft-config... "
+		xft_incs=`xft-config --cflags 2>/dev/null`
+		xft_libs=`xft-config --libs 2>/dev/null`
+		if [ $? != 0 ]; then
+			echo no
+			xft_incs=
+			xft_libs=-lXft
+		else
+			echo yes
+		fi
+	else
+		echo yes
+	fi
+
+	echo -n "Checking Xft... "
+	$xcc -I$xlib_dir/include $xft_incs config/xft.c \
+		-L$xlib_dir/lib -lX11 $xft_libs >/dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo no
+		use_xft=0
+	else
+		echo yes
+		rm -f a.out
+		vk_opt="$vk_opt -DUSE_XFT $xft_incs"
+	fi
+fi
+
+echo "VERSION=$version" > Makefile.cfg
+#echo "PREFIX=$prefix" >> Makefile.cfg
+echo "XLIB_DIR=$xlib_dir" >> Makefile.cfg
+if [ "$vk_opt" != "" ]; then
+	echo "VK_OPT=$vk_opt" >> Makefile.cfg
+fi
+echo "XFT_LIBS=$xft_libs" >> Makefile.cfg
+echo "LIBDL=$lib_dl" >> Makefile.cfg
+
+sys=`uname -s | tr [A-Z] [a-z] | sed -e "s/.*bsd.*/bsd/"`
+if [ "$sys" = "sunos" ]; then
+	echo 'DLFLAGS=-dy -G -B dynamic -fpic -Wl' >> Makefile.cfg
+else
+	echo 'DLFLAGS=-shared -fpic -Wl,-soname,$@' >> Makefile.cfg
+fi
+
+echo
+echo "Compile options:"
+echo -n "  Enable XFT: "; show_status $use_xft
+echo -n "  Enable spell checking: "; show_status $use_spellcheck
+echo -n "  Enable extended keystroke: "; show_status $use_extstroke
+echo -n "  Enable ABC liked Telex keystroke: "; show_status $use_abcstroke
+echo "done."
+echo
+echo "Type \"make\" to compile"
+echo
+
+rm -f a.out
+ln -sf Makefile.$sys Makefile
+cd tools
+ln -sf ../config.h
+ln -sf Makefile.$sys Makefile

@@ -1,0 +1,1 @@
+../xresource.c
